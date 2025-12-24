@@ -36,3 +36,132 @@
     transform: rotate(360deg);
   }
 }
+/* 애니메이션 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 기본 레이아웃 */
+.chat-container {
+  background-color: #f4f4f4; /* $background_color 대체 */
+
+  width: 1300px;
+  height: 1000px;
+
+  margin: 5px ;
+  border-radius: 20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.welcomegame{
+ padding: 20px;
+  font-family:sans-serif;
+}
+
+#log {
+  width: 100%;
+  overflow-y: auto;
+  font-family: sans-serif;
+}
+
+/* 메시지 하나하나의 박스 */
+.chat-item {
+  position: relative;
+  margin-top: 20px;
+  padding-left: 56px; /* 프로필 사진 공간 */
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* 내가 쓴 글 (오른쪽 정렬) */
+.chat-item.me {
+  padding-left: 0;
+  padding-right: 56px;
+  text-align: right;
+}
+
+/* 프로필 사진 이미지 */
+.chat-item::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0;
+  width: 40px; height: 40px;
+  background: url(https://marshall-ku-tgd.github.io/tmpImages/cat.png) center no-repeat;
+  background-size: cover;
+  border-radius: 5px;
+}
+
+.chat-item.me::before {
+  left: auto;
+  right: 0;
+}
+
+/* 이름(메타 정보) */
+.meta {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #555;
+}
+.game-player{
+  display:flex;
+  gap:20px;
+  align-Items:flex-start;
+}
+.player-list-side{
+  width: 400px;
+  height: 800px;
+  border:1px solid #ccc;
+  padding: 15px;
+  margin: 10px ;
+}
+
+/* 말풍선 본체 */
+.message {
+  position: relative;
+  display: inline-block;
+  background: #fff;
+  color: #000;
+  border-radius: 0.4em;
+  padding: 8px 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 말풍선 꼬리 (왼쪽용) */
+.chat-item:not(.me) .message::after {
+  content: "";
+  position: absolute;
+  left: -10px; top: 10px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #fff;
+}
+
+/* 말풍선 꼬리 (오른쪽용) */
+.chat-item.me .message::after {
+  content: "";
+  position: absolute;
+  right: -10px; top: 10px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #fff;
+}
+
+/* 입력창 스타일 */
+.input-area {
+  display: flex;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
