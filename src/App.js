@@ -1,209 +1,241 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { io } from "socket.io-client";
 import './App.css';
 
+const socket = io("http://localhost:4000");
+
 function App() {
+    // 0: lobby(메인), 1: game(게임방)
+    const [view, setView] = useState(0);
     const [chatLog, setChatLog] = useState([
         { id: 1, user: "운영자", text: "안녕! 금칙어 게임 시작해볼까?", isMe: false },
-        { id: 2, user: "운영자", text: "게임을 시작하겠습니다 금칙어를 설정해주세요."}
+        { id: 2, user: "운영자", text: "게임을 시작하겠습니다 금칙어를 설정해주세요." }
     ]);
     const [inputValue, setInputValue] = useState("");
-    const [forbiddenWord,setforbiddenWord] = useState(""); // 테스트용 금칙어
     const [myId, setMyId] = useState(1);
-    const [players,setPlayers] = useState([
-        { id: 1, name: "플레이어 1", forbiddenWord: "", isAlive: true ,isMe: true},
-        { id: 2, name: "플레이어 2", forbiddenWord: "", isAlive: true,isMe: false},
-        { id: 3, name: "플레이어 3", forbiddenWord: "", isAlive: true ,isMe: false},
-        { id: 4, name: "플레이어 4", forbiddenWord: "", isAlive: true ,isMe: false},
-    ])
+    const [players, setPlayers] = useState([
+        { id: 1, name: "플레이어 1", forbiddenWord: "", isAlive: true, isMe: true },
+        { id: 2, name: "플레이어 2", forbiddenWord: "", isAlive: true, isMe: false },
+        { id: 3, name: "플레이어 3", forbiddenWord: "", isAlive: true, isMe: false },
+        { id: 4, name: "플레이어 4", forbiddenWord: "", isAlive: true, isMe: false },
+    ]);
     const [isGameStarted, setIsGameStart] = useState(false);
-    // const forbiddenset = () => {
-    //    const answer =  prompt('금칙어를 설정해주세요',"EX) 콜라");
-    //     if(answer !== null && answer.trim() !=="") {
-    //         setforbiddenWord(answer);
-    //         alert(`금칙어가 [${answer}]로 설정 되었습니다`);
-    //     }
-    //
-    //
-    // };
-
-    const closeGame = () =>{
-
-        const closegameplayer = players.map(p => {
-            return {
-                ...p,
-                isAlive:true,
-                forbiddenWord:""
-            };
-
-        });
-
-        setPlayers(closegameplayer);
-        setChatLog([]);
-        setIsGameStart(false);
-        alert("게임이 종료되었습니다");
-    }
-    const startGame = () =>{
-        const notcheckWord =players.every(p => p.forbiddenWord !== "");
-        if(!notcheckWord)
-        {
-            alert("금칙어가 설정되있지 않은 플레이어가 있습니다.");
-            return;
-        }
 
 
-        setIsGameStart(true);
-        alert("게임을 시작하겠습니다 금칙어를 말하면 탈락입니다")
-        
-    }
-    const changePlayer = (id) => {
-         setMyId(id);
-        const updatedPlayers = players.map(p => ({
-            ...p,
-            isMe: p.id === id
-        }));
-        alert(`플레이어 ${id}번님이 플레이어로 설정되었습니다`);
-        setPlayers(updatedPlayers);
-    }
 
-    const relayForbiddenSet =() => {
-        const myInfo = players.find(p => p.id === myId);
-        if (!myInfo) return;
-
-        let targetId = myInfo.id === 4 ? 1 : myInfo.id + 1;
-
-        const answer = prompt(`플레이어 ${targetId} 의 금칙어를 입력하세요`);
-
-        if (!answer) return;
-
-        const updatePlayers = players.map(p => {
-            if (p.id === targetId) {
-                return {...p, forbiddenWord: answer};
-            }
-            return p;
-        });
-
-
-        setPlayers(updatePlayers);
-        alert(`플레이어 ${targetId} 님의 금칙어가 설정되었습니다`);
+    // 캐릭터 선택 로직
+    const selectPlayerAndEnter = (id) => {
+        setMyId(id);
+        localStorage.setItem("savedMyId", id);
+              setView(1); // 게임 화면(1)으로 이동
+        socket.emit("request_sync");
 
     };
 
+    useEffect(() => {
+        const savedId = localStorage.getItem("savedMyId");
+        if(savedId){
+            setMyId(Number(savedId));
+            setView(1);
+        }
+    }, []);
+
+    const closeGame = () => {
+        const resetPlayers = players.map(p => ({
+            ...p,
+            isAlive: true,
+            forbiddenWord: ""
+        }));
+        setPlayers(resetPlayers);
+        setChatLog([]);
+        setIsGameStart(false);
+        alert("게임이 종료되었습니다");
+    };
+
+    const checkForbiddenWord = (data) => {
+        if (!isGameStarted) return;
+        const sender = players.find(p => p.id === data.senderId);
+        if (!sender || !sender.isAlive) return;
+
+        const badWord = sender.forbiddenWord;
+        if (badWord && data.text.includes(badWord)) {
+            setPlayers(prevPlayers => {
+                const updated = prevPlayers.map(p =>
+                    p.id === data.senderId ? { ...p, isAlive: false } : p
+                );
+                const survivors = updated.filter(p => p.isAlive);
+                if (survivors.length === 1) {
+                    alert(`축하드립니다 ★ ${survivors[0].name} 님이 우승하셨습니다`);
+                    closeGame();
+                }
+                return updated;
+            });
+
+            const systeMsg = {
+                id: Date.now() + 1,
+                user: "시스템",
+                text: ` [${sender.name}] 탈락! 금칙어 [${badWord}]를 말했습니다`
+            };
+            setChatLog(prev => [...prev, systeMsg]);
+        }
+    };
+
+    useEffect(() => {
+        socket.on("connect", () => {
+
+            console.log("서버 연결됨:", socket.id);
+        });
+         socket.on("sync_game_data", (serverPlayers)=>{
+             console.log("데이터 동기화 완료!");
+             setPlayers(serverPlayers.map(sp => ({
+                 ...sp,
+                 isMe: sp.id === myId
+             })));
+         });
+
+
+        socket.on("update_forbidden", (data) => {
+            setPlayers((prevPlayers) => prevPlayers.map(p =>
+                p.id === data.targetId ? { ...p, forbiddenWord: data.forbiddenWord } : p
+            ));
+        });
+        socket.on("game_started_all", () => {
+            setIsGameStart(true);
+            setChatLog(prev => [...prev, {
+                id: Date.now(), user: "시스템", text: "🚨 게임이 시작되었습니다! 금칙어를 말하면 탈락입니다."
+            }]);
+        });
+        socket.on("receive_message", (data) => {
+            setChatLog(prev => [...prev, data]);
+        });
+
+
+
+        return () => {
+            socket.off("sync_game_data");
+            socket.off("connect");
+            socket.off("update_forbidden");
+            socket.off("game_started_all");
+            socket.off("receive_message");
+        };
+    }, [myId]);
+
+    useEffect(() => {
+        if (chatLog.length > 0) {
+            const lastChat = chatLog[chatLog.length - 1];
+            if (lastChat.senderId) {
+                checkForbiddenWord(lastChat);
+            }
+        }
+    }, [chatLog]);
+
+    const startGame = () => {
+        const nocheckWord = players.every(p => p.forbiddenWord !== "");
+        if (!nocheckWord) {
+            alert("금칙어가 설정되있지 않은 플레이어가 있습니다.");
+            return;
+        }
+        socket.emit("start_game");
+    };
+
+
+
+    const relayForbiddenSet = () => {
+        const myInfo = players.find(p => p.id === myId);
+        if (!myInfo) return;
+        let targetId = myInfo.id === 4 ? 1 : myInfo.id + 1;
+        const answer = prompt(`플레이어 ${targetId} 의 금칙어를 입력하세요`);
+        if (!answer) return;
+        socket.emit("set_forbidden", { targetId, forbiddenWord: answer });
+        alert(`플레이어 ${targetId} 님의 금칙어가 설정되었습니다`);
+    };
 
     const handleSend = () => {
         if (!inputValue.trim()) return;
-
-
-
         const myInfo = players.find(p => p.id === myId);
-        if (!myInfo) {
-            alert("플레이어를 선택해주세요");
-            return;
-        }
-        if(myInfo.isAlive === false){
-            alert("탈락자는 메세지를 보낼 수 없습니다");
-            return;
-        }
-        const myName = myInfo.name;
-        //   1. 금칙어 체크 로직 (배운 것 활용!)
-        if (isGameStarted) {
-            const myBadWord = myInfo.forbiddenWord;
+        if (!myInfo || !myInfo.isAlive) return;
 
-            if (myBadWord && inputValue.includes(myBadWord)) {
-                const dieplayers = players.map(p => {
-                    if(p.id === myId) {
-                        return {...p, isAlive: false};
-                    }
-                    return p;
-                });
-                setPlayers(dieplayers);
-                alert(`탈락! [${myInfo.name}] 님은 금칙어 [${myBadWord}]를 말했습니다!`);
-                const survivors = dieplayers.filter(p => p.isAlive);
-                if(survivors.length === 1){
-                    alert(`축하드립니다 ★${survivors[0].name}★님이 우승하셨습니다`);
-                    closeGame();
-
-                }
-
-                setInputValue("");
-                return;
-            }
-    }
-
-
-        // 2. 채팅 로그 추가
-        const newChat = {
+        const chatData = {
             id: Date.now(),
-            user: myName,
+            user: myInfo.name,
             text: inputValue,
-            senderId:myId
+            senderId: myId
         };
-
-        setChatLog([...chatLog, newChat]);
+        socket.emit("send_message", chatData);
         setInputValue("");
     };
 
     return (
-     <div className="welcomegame">
-            <h1>금칙어 게임에 오신 걸 환영 합니다</h1>
-        <div className="forbideenset">
-            <button onClick={relayForbiddenSet}>금칙어 설정 </button>
-        </div>
-         <div className="gameStart">
-             {/* 게임 시작 전이면 버튼을 보여주고, 시작 후면 '게임 진행 중' 텍스트를 보여줌 */}
-             {!isGameStarted ? (
-                 <button onClick={startGame}>게임 스타트</button>
-             ) : (
-                 <span style={{ color: 'red', fontWeight: 'bold' }}>🎮 게임 진행 중...
-                 <button onClick={closeGame}>게임 종료</button></span>
-
-             )}
-             <div className= "player1">
-                 <button onClick={() => changePlayer(1)}>플레이어 1번 설정</button>
-                 <button onClick={() =>changePlayer(2)}>플레이어 2번 설정</button>
-                 <button onClick={() =>changePlayer(3)}>플레이어 3번 설정</button>
-                 <button onClick={() =>changePlayer(4)}>플레이어 4번 설정</button>
-
-             </div>
-         </div>
-
-       <div className="game-player" >
-            <div className="player-list-side">
-                    <h3>참여 플레이어</h3>
-                    <ul>
-                        {players.map((p) => (
-                            <li key = {p.id} className={`player-item ${p.isMe ? 'me' : ''}`}>
-                        {p.name} {p.isAlive ? "" : "💀"}
-                            <span>{p.forbiddenWord ? " (설정 O) " : " (설정 X)"}
-                                {p.isAlive ? "[생존중]" : "[탈락]"}
-                            </span>
-
-                          </li>
+        <div className="App">
+            {view === 0 ? (
+                /* 로비 화면 */
+                <div className="lobby-container">
+                    <h1>🚫 금칙어 데스게임</h1>
+                    <p>플레이할 캐릭터를 선택하고 입장하세요 </p>
+                    <div className="player-grid">
+                        {[1, 2, 3, 4].map((id) => (
+                            <div key={id} className="player-card">
+                                <h3>플레이어 {id}</h3>
+                                <button onClick={() => selectPlayerAndEnter(id)}>
+                                    선택하기
+                                </button>
+                            </div>
                         ))}
-                      </ul>
-              </div>
-
-        <div className="chat-container">
-            <div id="log">
-                {chatLog.map((chat) => (
-                    <div key={chat.id} className={`chat-item ${chat.senderId === myId ? 'me' : ''}`}>
-                        <span className="meta">{chat.user}</span>
-                        <div className="message">{chat.text}</div>
                     </div>
-                ))}
-            </div>
+                </div>
+            ) : (
+                /* 게임 화면 */
+                <div className="welcomegame">
+                    <button className="back-btn" onClick={() => setView(0)}>🏠 메인으로</button>
+                    <h1>금칙어 게임 진행중 (나: 플레이어 {myId})</h1>
+                    <div className="forbideenset">
+                        {!isGameStarted && <button onClick={relayForbiddenSet}>금칙어 설정 </button>}
+                    </div>
+                    <div className="gameStart">
+                        {myId === 1 && !isGameStarted && (
+                            <button className="start-btn" onClick={startGame}>게임 시작 (방장)</button>
+                        )}
 
-            <div className="input-area">
-                <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="메시지를 입력하세요..."
-                />
-                <button onClick={handleSend}>전송</button>
-                 </div>
-              </div>
-            </div>
+                    </div>
+
+                    <div className="game-player">
+                        <div className="player-list-side">
+                            <h3>참여 플레이어</h3>
+                            <ul>
+                                {players.map((p) => (
+                                    <li key={p.id} className={`player-item ${p.isMe ? 'me' : ''}`}>
+                                        {p.name} {p.isAlive ? "" : "💀"}
+                                        <span>{p.forbiddenWord ? " (설정 O) " : " (설정 X)"}
+                                            {p.isAlive ? "[생존중]" : "[탈락]"}
+                                            {!p.isAlive && `(금칙어: ${p.forbiddenWord})`}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="chat-container">
+                            <div id="log">
+                                {chatLog.map((chat) => (
+                                    <div key={chat.id} className={`chat-item ${chat.senderId === myId ? 'me' : ''}`}>
+                                        <span className="meta">{chat.user}</span>
+                                        <div className="message">{chat.text}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="input-area">
+                                <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                />
+                                <button onClick={handleSend}>전송</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
