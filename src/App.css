@@ -247,32 +247,7 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
-@media (max-width: 768px) {
-  .lobby-container, .welcomegame {
-    width: 100%;       /* 전체 너비 사용 */
-    padding: 10px;     /* 여백 줄이기 */
-  }
-
-  .player-grid {
-    grid-template-columns: 1fr 1fr; /* 4줄로 나오던 걸 2줄씩 나오게 변경 */
-    gap: 10px;
-  }
-
-  .game-player {
-    flex-direction: column; /* 가로로 배치하던 플레이어 리스트와 채팅창을 세로로 배치 */
-  }
-
-  .player-list-side {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .chat-container {
-    width: 100%;
-    height: 400px; /* 채팅창 높이 고정 */
-  }
-
-  h1 {
-    font-size: 1.5rem; /* 글자 크기 조절 */
-  }
+.lobby-container, .welcomegame {
+  width: 1100px; /* 화면 너비를 고정 */
+  margin: 0 auto; /* 가운데 정렬 */
 }
