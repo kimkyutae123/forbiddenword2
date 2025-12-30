@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import { io } from "socket.io-client";
 import './App.css';
 
@@ -20,7 +20,13 @@ function App() {
         { id: 4, name: "플레이어 4", forbiddenWord: "", isAlive: true, isMe: false },
     ]);
     const [isGameStarted, setIsGameStart] = useState(false);
+    const scrollRef = useRef();
 
+    useEffect(() => {
+        if(scrollRef.current){
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [chatLog]);
 
 
     // 캐릭터 선택 로직
