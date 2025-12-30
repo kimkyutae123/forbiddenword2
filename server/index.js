@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 4000;
 
 const io = new Server(server, {
     cors: {
-        origin: "*",
+       origin:[ "http://localhost:3000",
+         "https://forbiddenword2.onrender.com"
+           ],
         methods: ["GET", "POST"],
 
     },
