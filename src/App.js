@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { io } from "socket.io-client";
 import './App.css';
-const SERVER_URL = "https://forbidden.onrender.com"
-const socket = io(SERVER_URL);
+
+const socket = io("https://forbiddenword2.onrender.com");
 
 function App() {
     // 0: lobby(메인), 1: game(게임방)
