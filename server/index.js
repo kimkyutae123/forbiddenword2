@@ -9,12 +9,12 @@ app.use(cors()); // 리액트가 서버에 접속할 수 있도록 통행증을 
 
 // HTTP 서버 제작
 const server = http.createServer(app);
-
+const PORT = process.env.PORT || 4000;
 // 소켓 통신을 위한 실제 우체국 역할을 하는 io 객체를 만듭니다.
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", //오직 3000번 포트만 접속을 허용하게함
+        origin: "*",
         methods: ["GET", "POST"],
 
     },
@@ -72,7 +72,6 @@ socket.emit("sync_game_data",gameData.players);
 
 // 서버 구동
 
-const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`서버가 ${PORT}번 포트에서 돌아가고 있어요`);
 });
