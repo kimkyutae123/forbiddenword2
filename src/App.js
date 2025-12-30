@@ -206,44 +206,14 @@ function App() {
             ) : (
                 /* 게임 화면 */
                 <div className="welcomegame">
-                    <button className="back-btn" onClick={() => setView(0)}>🏠 메인으로</button>
-                    <h1>금칙어 게임 진행중 (나: 플레이어 {myId})</h1>
-                    <div className="forbideenset">
-                        {!isGameStarted && <button onClick={relayForbiddenSet}>금칙어 설정 </button>}
-                    </div>
-                    <div className="gameStart">
-                        {myId === 1 && !isGameStarted && (
-                            <button className="start-btn" onClick={startGame}>게임 시작 (방장)</button>
-                        )}
-
-                    </div>
+                    {/* 상단 버튼들... */}
 
                     <div className="game-player">
-                        <div className="player-list-side">
-                            <h3>참여 플레이어</h3>
-                            <ul>
-                                {players.map((p) => (
-                                    <li key={p.id} className={`player-item ${p.isMe ? 'me' : ''}`}>
-                                        {p.name} {p.isAlive ? "" : "💀"}
-                                        <span>
-                                            {p.isAlive ? (
-                                                p.id === myId ? (
-                                                    p.forbiddenWord ? " [내 금칙어 : ??? ] " : " [ 설정 대기 중 ]"
-                                                ) : (
-                                                    p.forbiddenWord ? ` [ 금칙어: ${p.forbiddenWord} ]` : " [설정 대기중 ] "
-                                                )
-                                            ) : (
-                                                ` [ 탈락! 금칙어 : ${p.forbiddenWord} ]`
-                                            )}
-                                            {p.isAlive ? "[생존]" : "[탈락"}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        {/* 플레이어 리스트... */}
 
                         <div className="chat-container">
-                            <div id="log">
+                            {/* [수정] id="log" 대신 ref={scrollRef}를 직접 연결합니다 */}
+                            <div id="log" ref={scrollRef}>
                                 {chatLog.map((chat) => (
                                     <div key={chat.id} className={`chat-item ${chat.senderId === myId ? 'me' : ''}`}>
                                         <span className="meta">{chat.user}</span>
@@ -251,10 +221,12 @@ function App() {
                                     </div>
                                 ))}
                             </div>
+
                             <div className="input-area">
                                 <input
                                     type="text"
                                     value={inputValue}
+                                    placeholder="메시지를 입력하세요..."
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                                 />
@@ -267,5 +239,4 @@ function App() {
         </div>
     );
 }
-
 export default App;
