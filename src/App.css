@@ -283,21 +283,44 @@ input, select, textarea {
 /* 3. 모바일 반응형 대응 (화면이 작을 때) */
 @media (max-width: 600px) {
   .lobby-container, .welcomegame {
-    max-width: 100%;     /* 모바일에서는 1100px 제한 해제 */
-    height: 100dvh;      /* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
+    height: auto;
+    min-height: 100dvh;
+    width: 100%;      /* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
   }
+  .welcomegame h1 {
+     font-size: 1.2rem; /* 글씨를 작게 해서 한 줄에 나오게 */
+     margin: 10px 0;
+   }
 
   /* 모바일에서 플레이어 목록이 가로로 너무 길면 세로로 배치하거나 줄임 */
   .player-list-side ul {
-    flex-wrap: wrap;     /* 자리가 부족하면 다음 줄로 */
-    font-size: 13px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2열로 배치 */
+    gap: 5px;
+    font-size: 11px;
+  }
+  #log {
+    height: 350px; /* 채팅창 높이를 확보 */
+    flex: none;    /* 억지로 줄어들지 않게 */
+  }
+  .chat-item {
+    width: 90%;
+    padding-left: 45px; /* 프로필 공간 살짝 축소 */
   }
 
-  /* 모바일 입력창 근처 여백 조정 */
+  .chat-item.me {
+    padding-right: 45px;
+  }
+
+  /* 6. 입력창: 엄지손가락이 닿기 편하게 패딩 추가 */
   .input-area {
     padding: 10px;
-    padding-bottom: 20px; /* 엄지손가락 클릭이 편하게 하단 여백 추가 */
+    position: sticky; /* 하단에 고정 */
+    bottom: 0;
+    background: white;
   }
+  /* 모바일 입력창 근처 여백 조정 */
+
 
 
 
