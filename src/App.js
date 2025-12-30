@@ -205,14 +205,51 @@ function App() {
                 </div>
             ) : (
                 /* 게임 화면 */
+                /* 게임 화면 (view === 1) */
                 <div className="welcomegame">
-                    {/* 상단 버튼들... */}
+                    {/* 1. 상단 메뉴 및 뒤로가기 */}
+                    <button className="back-btn" onClick={() => setView(0)}>🏠 메인으로</button>
+                    <h1>금칙어 게임 진행중 (나: 플레이어 {myId})</h1>
 
+                    {/* 2. 금칙어 설정 및 게임 시작 버튼 (사라졌던 부분!) */}
+                    <div className="forbideenset">
+                        {!isGameStarted && <button onClick={relayForbiddenSet}>금칙어 설정 </button>}
+                    </div>
+                    <div className="gameStart">
+                        {myId === 1 && !isGameStarted && (
+                            <button className="start-btn" onClick={startGame}>게임 시작 (방장)</button>
+                        )}
+                    </div>
+
+                    {/* 3. 게임 메인 영역 (플레이어 리스트 + 채팅) */}
                     <div className="game-player">
-                        {/* 플레이어 리스트... */}
+                        {/* 플레이어 리스트 사이드바 (사라졌던 부분!) */}
+                        <div className="player-list-side">
+                            <h3>참여 플레이어</h3>
+                            <ul>
+                                {players.map((p) => (
+                                    <li key={p.id} className={`player-item ${p.isMe ? 'me' : ''}`}>
+                                        {p.name} {p.isAlive ? "" : "💀"}
+                                        <span>
+                            {p.isAlive ? (
+                                p.id === myId ? (
+                                    p.forbiddenWord ? " [내 금칙어 : ??? ] " : " [ 설정 대기 중 ]"
+                                ) : (
+                                    p.forbiddenWord ? ` [ 금칙어: ${p.forbiddenWord} ]` : " [설정 대기중 ] "
+                                )
+                            ) : (
+                                ` [ 탈락! 금칙어 : ${p.forbiddenWord} ]`
+                            )}
+                                            {p.isAlive ? "[생존]" : "[탈락]"}
+                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
+                        {/* 채팅창 컨테이너 */}
                         <div className="chat-container">
-                            {/* [수정] id="log" 대신 ref={scrollRef}를 직접 연결합니다 */}
+                            {/* [핵심] ref를 여기에 연결해서 스크롤이 작동하게 합니다 */}
                             <div id="log" ref={scrollRef}>
                                 {chatLog.map((chat) => (
                                     <div key={chat.id} className={`chat-item ${chat.senderId === myId ? 'me' : ''}`}>
