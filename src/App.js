@@ -141,13 +141,27 @@ function App() {
 
 
     const relayForbiddenSet = () => {
+
         const myInfo = players.find(p => p.id === myId);
         if (!myInfo) return;
+
         let targetId = myInfo.id === 4 ? 1 : myInfo.id + 1;
+        const targetPlayer = players.find(p => p.id === targetId);
+
+        if(targetPlayer && targetPlayer.forbiddenWord) {
+            alert(`플레이어 ${targetId}의 금칙어는 이미 설정되있습니다!`);
+            return;
+        }
         const answer = prompt(`플레이어 ${targetId} 의 금칙어를 입력하세요`);
-        if (!answer) return;
-        socket.emit("set_forbidden", { targetId, forbiddenWord: answer });
-        alert(`플레이어 ${targetId} 님의 금칙어가 설정되었습니다`);
+
+        if(answer && answer.trim()) {
+            socket.emit("set_forbidden", {
+                targetId: targetId,
+                forbiddenWord: answer.trim()
+
+                });
+            alert(`플레이어 ${targetId} 님의 금칙어가 설정되었습니다`);
+        }
     };
 
     const handleSend = () => {
@@ -205,9 +219,17 @@ function App() {
                                 {players.map((p) => (
                                     <li key={p.id} className={`player-item ${p.isMe ? 'me' : ''}`}>
                                         {p.name} {p.isAlive ? "" : "💀"}
-                                        <span>{p.forbiddenWord ? " (설정 O) " : " (설정 X)"}
-                                            {p.isAlive ? "[생존중]" : "[탈락]"}
-                                            {!p.isAlive && `(금칙어: ${p.forbiddenWord})`}
+                                        <span>
+                                            {p.isAlive ? (
+                                                p.id === myId ? (
+                                                    p.forbiddenWord ? " [내 금칙어 : ??? ] " : " [ 설정 대기 중 ]"
+                                                ) : (
+                                                    p.forbiddenWord ? ` [ 금칙어: ${p.forbiddenWord} ]` : " [설정 대기중 ] "
+                                                )
+                                            ) : (
+                                                ` [ 탈락! 금칙어 : ${p.forbiddenWord} ]`
+                                            )}
+                                            {p.isAlive ? "[생존]" : "[탈락"}
                                         </span>
                                     </li>
                                 ))}

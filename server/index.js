@@ -72,7 +72,7 @@ socket.emit("sync_game_data",gameData.players);
 
 // 서버 구동
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`서버가 ${PORT}번 포트에서 돌아가고 있어요`);
 });
