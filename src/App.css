@@ -101,10 +101,6 @@ body {
   width: 1200px; /* 네가 원하는 PC 축소 뷰 기준 너비 */
   margin: 0 auto;
 }
-.player-item.me {
-  border: 2px solid #fee500;
-  background-color: #fffde7;
-}
 /* 프로필 사진 이미지 */
 .chat-item::before {
   content: "";
