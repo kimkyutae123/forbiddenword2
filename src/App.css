@@ -196,7 +196,8 @@ input, textarea {
 .lobby-container {
   /* body의 flex 설정을 무시하고 화면 전체 너비를 확보 */
   width: 100vw;
-  height: 100vh;
+  max-width:none;
+  margin: 0;
 
   /* 배경색이나 이미지를 크게 깔아줍니다 */
   background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
@@ -255,10 +256,11 @@ input, textarea {
   font-weight: bold;
 }
 .lobby-container, .welcomegame {
-  margin: 0 auto;        /* 화면 중앙 정렬 */
-  width: 100%;           /* 기본적으로 너비는 100% */
-  max-width: 1100px;     /* 하지만 최대 1100px까지만 커져라 (PC용) */
-  box-sizing: border-box;
+  width: 100%;
+  max-width: 1100px;
+  margin : 0 auto;
+  box-sizing:border-box;
+  min-height:100vh
 }
 
 
@@ -283,9 +285,9 @@ input, select, textarea {
 /* 3. 모바일 반응형 대응 (화면이 작을 때) */
 @media (max-width: 600px) {
   .lobby-container, .welcomegame {
-    height: auto;
-    min-height: 100dvh;
-    width: 100%;      /* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 10px;/* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
   }
   .welcomegame h1 {
      font-size: 1.2rem; /* 글씨를 작게 해서 한 줄에 나오게 */
@@ -323,10 +325,10 @@ input, select, textarea {
 
   .player-grid {
     /* 4열에서 2열로 변경! 공간이 2배로 넓어집니다 */
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;       /* 카드 사이의 간격 (여유로운 느낌) */
-    padding: 0 20px; /* 양옆 짤림 방지 여백 */
+    grid-template-columns: repeat(2, 1fr); /* 2개씩 배치해서 큼직하게 */
+    gap: 15px;
     width: 100%;
+    padding: 20px;
   }
 
   .player-card {
