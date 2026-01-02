@@ -21,7 +21,6 @@ const io = new Server(server, {
 
     },
 });
-let occupancy = {1:false,2:false,3:false,4:false};
 
 
 // 서버에 '이벤트'가 발생했을때 어떻게 행동할지 정의
@@ -43,7 +42,7 @@ io.on("connection", (socket) => {
     socket.emit("sync_game_data",gameData.players);
 
     socket.on("check_occupancy", (id, callback) => {
-        const targetPlayer = gameData.players.find(p=> p.id === id);
+        const targetPlayer = gameData.players.find(p=> p.id === Number(id));
 
         if(targetPlayer && !targetPlayer.isOccupied) {
             targetPlayer.isOccupied = true;
@@ -100,9 +99,9 @@ io.on("connection", (socket) => {
    socket.on("disconnect", () => {
     const playerId = socketToplayer[socket.id];
     if(playerId) {
-        const Player = gameData.players.find(p => p.id === playerId);
-        if(Player) {
-            Player.isOccupied = false;
+        const player = gameData.players.find(p => p.id === playerId);
+        if(player) {
+            player.isOccupied = false;
             console.log(`접속 끊김 : 플레이어 ${playerId}번 자리가 자동 초기화 되었습니다`);
 
         }
