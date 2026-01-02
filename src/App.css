@@ -280,14 +280,9 @@ input, select, textarea {
 
 /* 2. 채팅창 레이아웃 수정 */
 #log {
-  height: 400px;         /* 적절한 고정 높이 */
-  overflow-y: auto;      /* 내용이 많아지면 스크롤 생성 */
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  height: 50vh; /* 화면 높이의 50% 정도를 채팅창에 할당 */
+  margin: 10px;
+  border-radius: 15px;
 }
 
 /* 3. 모바일 반응형 대응 (화면이 작을 때) */
@@ -298,8 +293,8 @@ input, select, textarea {
     padding: 0 10px;      /* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
   }
   .welcomegame h1 {
-    font-size: 1.2rem; /* 글씨를 작게 해서 한 줄에 나오게 */
-    margin: 10px 0;
+    font-size: 1.1rem;
+    margin: 15px 0;
   }
   .player-grid {
     grid-template-columns: repeat(2, 1fr); /* 2개씩 배치해서 큼직하게 */
@@ -310,9 +305,8 @@ input, select, textarea {
   /* 모바일에서 플레이어 목록이 가로로 너무 길면 세로로 배치하거나 줄임 */
   .player-list-side ul {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2열로 배치 */
-    gap: 5px;
-    font-size: 11px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   #log {
     height: 350px; /* 채팅창 높이를 확보 */
@@ -335,10 +329,19 @@ input, select, textarea {
     background: white;
   }
   /* 모바일 입력창 근처 여백 조정 */
+  .player-card {
+    padding: 30px 10px; /* 위아래로 더 길쭉하고 시원하게 */
+  }
 
 
-
-
+  .player-card h3 {
+    font-size: 1.2rem;  /* 글자 크기를 살짝 줄여서 한 줄에 나오게 */
+  }
+  .player-card button {
+    font-size: 0.9rem;
+    white-space: nowrap; /* 글자가 세로로 꺾이는 것 절대 방지 */
+    padding: 10px;
+  }
   .player-list-side {
     width: 100%;
     margin-bottom: 10px;

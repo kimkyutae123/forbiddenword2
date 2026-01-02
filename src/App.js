@@ -266,20 +266,6 @@ function App() {
                                     placeholder="메시지를 입력하세요..."
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    onFocus={() =>{
-                                        setTimeout(() => {
-                                            if (scrollRef.current) {
-                                                // scrollHeight가 잡히지 않는 문제를 방지하기 위해
-                                                // 해당 요소의 전체 높이값을 가져와 스크롤을 끝까지 내립니다.
-                                                const scrollHeight = scrollRef.current.scrollHeight;
-
-                                                scrollRef.current.scrollTo({
-                                                    top: scrollHeight,
-                                                    behavior: 'smooth' // 스크롤이 툭 끊기지 않고 부드럽게 이동
-                                                });
-                                            }
-                                        }, 300);
-                                    }}
                                 />
                                 <button onClick={handleSend}>전송</button>
                             </div>
