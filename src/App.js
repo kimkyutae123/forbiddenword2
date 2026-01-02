@@ -225,7 +225,7 @@ function App() {
                 /* 게임 화면 (view === 1) */
                 <div className="welcomegame">
                     {/* 1. 상단 메뉴 및 뒤로가기 */}
-                    <button className="back-btn" onClick={() => setView(0)}>🏠 메인으로</button>
+                    <button className="back-btn" onClick={exitGame}>🏠 메인으로</button>
                     <h1>금칙어 게임 진행중 (나: 플레이어 {myId})</h1>
 
                     {/* 2. 금칙어 설정 및 게임 시작 버튼 (사라졌던 부분!) */}
