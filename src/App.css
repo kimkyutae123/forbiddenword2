@@ -196,8 +196,7 @@ input, textarea {
 .lobby-container {
   /* body의 flex 설정을 무시하고 화면 전체 너비를 확보 */
   width: 100vw;
-  max-width:none;
-  margin: 0;
+  height: 100vh;
 
   /* 배경색이나 이미지를 크게 깔아줍니다 */
   background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
@@ -256,11 +255,10 @@ input, textarea {
   font-weight: bold;
 }
 .lobby-container, .welcomegame {
-  width: 100%;
-  max-width: 1100px;
-  margin : 0 auto;
-  box-sizing:border-box;
-  min-height:100vh
+  margin: 0 auto;        /* 화면 중앙 정렬 */
+  width: 100%;           /* 기본적으로 너비는 100% */
+  max-width: 1100px;     /* 하지만 최대 1100px까지만 커져라 (PC용) */
+  box-sizing: border-box;
 }
 
 
@@ -285,9 +283,9 @@ input, select, textarea {
 /* 3. 모바일 반응형 대응 (화면이 작을 때) */
 @media (max-width: 600px) {
   .lobby-container, .welcomegame {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 10px;/* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
+    height: auto;
+    min-height: 100dvh;
+    width: 100%;      /* 모바일 브라우저 주소창 높이까지 고려 (Dynamic VH) */
   }
   .welcomegame h1 {
      font-size: 1.2rem; /* 글씨를 작게 해서 한 줄에 나오게 */
@@ -296,13 +294,10 @@ input, select, textarea {
 
   /* 모바일에서 플레이어 목록이 가로로 너무 길면 세로로 배치하거나 줄임 */
   .player-list-side ul {
-    display: grid;               /* 가로 나열 대신 그리드 사용 */
-    grid-template-columns: 1fr 1fr; /* 1:1 비율로 2열 만들기 */
-    gap: 10px;                   /* 플레이어들 사이의 간격 */
-    list-style: none;
-    padding: 15px;               /* 안쪽 여백을 줘서 조금 더 여유롭게 */
-    margin: 0 auto;
-    max-width: 800px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2열로 배치 */
+    gap: 5px;
+    font-size: 11px;
   }
   #log {
     height: 350px; /* 채팅창 높이를 확보 */
@@ -324,42 +319,14 @@ input, select, textarea {
     bottom: 0;
     background: white;
   }
-  /* 모바일 입력창 근처 여백 조정 */
+ 
 
-  .player-grid {
-    /* 4열에서 2열로 변경! 공간이 2배로 넓어집니다 */
-    grid-template-columns: repeat(2, 1fr); /* 2개씩 배치해서 큼직하게 */
-    gap: 15px;
-    width: 100%;
-    padding: 20px;
-  }
 
-  .player-card {
-    padding: 30px 10px; /* 위아래로 더 길쭉하고 시원하게 */
-  }
 
-  .player-card h3 {
-    font-size: 1.2rem;  /* 글자 크기를 살짝 줄여서 한 줄에 나오게 */
-  }
 
-  .player-card button {
-    font-size: 0.9rem;
-    white-space: nowrap; /* 글자가 세로로 꺾이는 것 절대 방지 */
-    padding: 10px;
-  }
-
-  .player-item {
-    display: flex;
-    justify-content: space-between; /* 이름은 왼쪽, 상태는 오른쪽 */
-    align-items: center;
-    padding: 10px 15px;
-    background: #f8f9fa;          /* 연한 배경색 추가 */
-    border-radius: 8px;           /* 모서리 둥글게 */
-    border: 1px solid #eee;         /* 모바일에서 적당한 글자 크기 */
-  }
   .player-list-side {
-    border: 2px solid #fee500;
-    background-color: #fffde7;
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
 
