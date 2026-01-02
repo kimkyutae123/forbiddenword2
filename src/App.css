@@ -296,10 +296,12 @@ input, select, textarea {
 
   /* 모바일에서 플레이어 목록이 가로로 너무 길면 세로로 배치하거나 줄임 */
   .player-list-side ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2열로 배치 */
-    gap: 5px;
-    font-size: 11px;
+    display: grid;               /* 리스트를 그리드 시스템으로 변경 */
+    grid-template-columns: 1fr 1fr; /* 가로로 똑같은 크기(1fr)의 기둥 2개 생성 */
+    gap: 10px;                   /* 항목 사이의 간격 */
+    list-style: none;
+    padding: 10px;               /* 안쪽 여백을 줘서 테두리에서 띄움 */
+    margin: 0;
   }
   #log {
     height: 350px; /* 채팅창 높이를 확보 */
@@ -311,7 +313,8 @@ input, select, textarea {
   }
 
   .chat-item.me {
-    padding-right: 45px;
+    border: 2px solid #fee500;
+    background-color: #fffde7;
   }
 
   /* 6. 입력창: 엄지손가락이 닿기 편하게 패딩 추가 */
@@ -330,7 +333,15 @@ input, select, textarea {
     width: 100%;
     padding: 20px;
   }
-
+  .player-item {
+    display: flex;
+    flex-direction: column;      /* 이름과 [상태]를 세로로 배치해서 가로 공간 확보 */
+    align-items: center;         /* 가운데 정렬 */
+    padding: 10px;
+    background: #f8f9fa;         /* 각 항목에 연한 배경을 주면 더 깔끔함 */
+    border-radius: 8px;
+    font-size: 13px;             /* 모바일에서 적당한 글자 크기 */
+  }
   .player-card {
     padding: 30px 10px; /* 위아래로 더 길쭉하고 시원하게 */
   }
