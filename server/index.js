@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 4000;
 const io = new Server(server, {
     cors: {
         origin: [ "https://forbiddenword2.vercel.app",
-        "https://localhost:3000"
+        "http://localhost:3000"
         ],
         methods: ["GET", "POST"],
 
@@ -23,25 +23,27 @@ const io = new Server(server, {
 });
 let occupancy = {1:false,2:false,3:false,4:false};
 
-let socketToplayer= {};
+
 // 서버에 '이벤트'가 발생했을때 어떻게 행동할지 정의
 // connection은 사용자가 우리 게임페이지에 딱 들어 왔을떄 하는 이벤트
 
 let gameData = {
     players: [
-        { id: 1, name: "플레이어 1", forbiddenWord: "", isAlive: true },
-        { id: 2, name: "플레이어 2", forbiddenWord: "", isAlive: true },
-        { id: 3, name: "플레이어 3", forbiddenWord: "", isAlive: true },
-        { id: 4, name: "플레이어 4", forbiddenWord: "", isAlive: true },
+        { id: 1, name: "플레이어 1", forbiddenWord: "", isAlive: true, isOccupied: false },
+        { id: 2, name: "플레이어 2", forbiddenWord: "", isAlive: true, isOccupied: false },
+        { id: 3, name: "플레이어 3", forbiddenWord: "", isAlive: true, isOccupied: false },
+        { id: 4, name: "플레이어 4", forbiddenWord: "", isAlive: true, isOccupied: false },
     ]
 };
+
+let socketToplayer= {};
 io.on("connection", (socket) => {
     //socket 변수안에는 방금 접속한 한 명의 플레이어 정보가 담겨있음
     console.log("새로운 플레이어 접속!", socket.id);
     socket.emit("sync_game_data",gameData.players);
 
     socket.on("check_occupancy", (id, callback) => {
-        const targetPlayer = gameData.Players.find(p=> p.id === id);
+        const targetPlayer = gameData.players.find(p=> p.id === id);
 
         if(targetPlayer && !targetPlayer.isOccupied) {
             targetPlayer.isOccupied = true;
