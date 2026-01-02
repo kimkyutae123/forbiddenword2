@@ -34,7 +34,7 @@ function App() {
         socket.emit("check_occupancy", id, (response) => {
             if (response.success) {
                 setMyId(id);
-                localStorage.setItem("saveMyId", id);
+                localStorage.setItem("saveMyId",id);
                 setView(1);
                 socket.emit("request_sync");
 
@@ -55,13 +55,13 @@ function App() {
             setView(0);
         }
     };
-    useEffect(() => {
-        const savedId = localStorage.getItem("savedMyId");
-        if(savedId){
-            setMyId(Number(savedId));
-            setView(1);
-        }
-    }, []);
+    // useEffect(() => {
+    //     const savedId = localStorage.getItem("savedMyId");
+    //     if(savedId){
+    //         setMyId(Number(savedId));
+    //         setView(1);
+    //     }
+    // }, []);
 
     const closeGame = () => {
         const resetPlayers = players.map(p => ({
