@@ -47,9 +47,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #abc1d1; /* 채팅창 배경색 분리 */
-  margin: 20px;        /* 채팅창 주변에 여백을 주어 답답함 해소 */
-  border-radius: 15px;
+  background: white;
   overflow: hidden;
 }
 
@@ -60,12 +58,7 @@
   background-color: #f0f0f0;
   overflow: hidden;      /* 바깥쪽 스크롤 방지 */
 }
-.welcomegame h1 {
-  padding: 30px 0;
-  font-size: 2rem;
-  color: #333;
-  letter-spacing: -1px; /* 글자 간격을 좁혀 세련되게 */
-}
+
 #log {
   flex: 1;
   overflow-y: auto; /* 로그 부분만 스크롤 발생 */
@@ -74,13 +67,13 @@
 
 /* 메시지 하나하나의 박스 */
 .chat-item {
-  background: #f1f3f5;
-  padding: 15px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between; /* 이름과 상태를 양끝으로 */
-  align-items: center;
-  transition: transform 0.2s;
+  position: relative;
+  margin-top: 20px;
+  display: flex; /* flex로 바꾸면 정렬이 훨씬 쉽습니다 */
+  flex-direction: column; /* 이름과 메시지를 세로로 배치 */
+  align-items: flex-start; /* 기본은 왼쪽 정렬 */
+  padding-left: 56px;
+  width: calc(100% - 70px); /* 너비 확보 */
 }
 
 /* 내가 쓴 글 (오른쪽 정렬) */
@@ -107,6 +100,10 @@ body {
   height: 100vh; /* 화면 전체 높이 사용 */
   width: 1200px; /* 네가 원하는 PC 축소 뷰 기준 너비 */
   margin: 0 auto;
+}
+.player-item.me {
+  border: 2px solid #fee500;
+  background-color: #fffde7;
 }
 /* 프로필 사진 이미지 */
 .chat-item::before {
@@ -138,24 +135,28 @@ body {
   overflow: hidden;
 }
 .player-list-side{
-  padding: 20px 40px;   /* PC에서는 좌우 여백을 넉넉히 */
-  background: #fdfdfd;
-  border-bottom: 1px solid #eee;
+  background: #fff;
+  border-bottom: 2px solid #ddd;
+  padding: 10px;
+  z-index: 10;
 }
 .player-list-side ul {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2명씩 2줄 배치 */
-  gap: 15px;
-  max-width: 800px;     /* 너무 퍼지지 않게 중앙으로 모음 */
-  margin: 0 auto;
+  display: flex; /* 가로로 나열 */
+  justify-content: space-around;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 /* 말풍선 본체 */
 .message {
-  font-size: 15px;
-  border-radius: 18px; /* 더 둥글게 */
-  max-width: 60%;
-  border: none;
+  position: relative;
+  display: inline-block;
+  background: #fff;
+  color: #000;
+  border-radius: 0.4em;
+  padding: 8px 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 /* 말풍선 꼬리 (왼쪽용) */
@@ -184,22 +185,16 @@ input, textarea {
 }
 /* 입력창 스타일 */
 .input-area {
-  padding: 20px;
-  background: #fff;
-  border-top: 1px solid #ddd;
+  display: flex;
+  margin-top: 20px;
+  gap: 10px;
 }
 
 .input-area input {
-  padding: 15px;
-  border: 1px solid #eee;
-  background: #f8f9fa;
-  border-radius: 30px; /* 둥근 입력창 */
-}
-.input-area button {
-  padding: 10px 25px;
-  background: #fee500;
-  border-radius: 20px;
-  font-weight: bold;
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 /* 로비 컨테이너: 화면 전체를 꽉 채우는 설정 */
 .lobby-container {
@@ -281,8 +276,14 @@ input, select, textarea {
 
 /* 2. 채팅창 레이아웃 수정 */
 #log {
-  padding: 25px;
-  gap: 15px;
+  height: 400px;         /* 적절한 고정 높이 */
+  overflow-y: auto;      /* 내용이 많아지면 스크롤 생성 */
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 /* 3. 모바일 반응형 대응 (화면이 작을 때) */
@@ -299,12 +300,13 @@ input, select, textarea {
 
   /* 모바일에서 플레이어 목록이 가로로 너무 길면 세로로 배치하거나 줄임 */
   .player-list-side ul {
-    display: grid;               /* 리스트를 그리드 시스템으로 변경 */
-    grid-template-columns: 1fr 1fr; /* 가로로 똑같은 크기(1fr)의 기둥 2개 생성 */
-    gap: 10px;                   /* 항목 사이의 간격 */
+    display: grid;               /* 가로 나열 대신 그리드 사용 */
+    grid-template-columns: 1fr 1fr; /* 1:1 비율로 2열 만들기 */
+    gap: 10px;                   /* 플레이어들 사이의 간격 */
     list-style: none;
-    padding: 10px;               /* 안쪽 여백을 줘서 테두리에서 띄움 */
-    margin: 0;
+    padding: 15px;               /* 안쪽 여백을 줘서 조금 더 여유롭게 */
+    margin: 0 auto;
+    max-width: 800px;
   }
   #log {
     height: 350px; /* 채팅창 높이를 확보 */
@@ -316,8 +318,7 @@ input, select, textarea {
   }
 
   .chat-item.me {
-    border: 2px solid #fee500;
-    background-color: #fffde7;
+    padding-right: 45px;
   }
 
   /* 6. 입력창: 엄지손가락이 닿기 편하게 패딩 추가 */
@@ -336,18 +337,7 @@ input, select, textarea {
     width: 100%;
     padding: 20px;
   }
-  .player-item {
-    display: flex;
-    flex-direction: column;      /* 이름과 [상태]를 세로로 배치해서 가로 공간 확보 */
-    align-items: center;         /* 가운데 정렬 */
-    padding: 10px;
-    background: #f8f9fa;         /* 각 항목에 연한 배경을 주면 더 깔끔함 */
-    border-radius: 8px;
-    font-size: 13px;             /* 모바일에서 적당한 글자 크기 */
-  }
-  .player-item:hover {
-    transform: translateY(-3px); /* 마우스 올리면 살짝 들리는 효과 */
-  }
+
   .player-card {
     padding: 30px 10px; /* 위아래로 더 길쭉하고 시원하게 */
   }
@@ -362,10 +352,18 @@ input, select, textarea {
     padding: 10px;
   }
 
-
+  .player-item {
+    display: flex;
+    justify-content: space-between; /* 이름은 왼쪽, 상태는 오른쪽 */
+    align-items: center;
+    padding: 10px 15px;
+    background: #f8f9fa;          /* 연한 배경색 추가 */
+    border-radius: 8px;           /* 모서리 둥글게 */
+    border: 1px solid #eee;         /* 모바일에서 적당한 글자 크기 */
+  }
   .player-list-side {
-    width: 100%;
-    margin-bottom: 10px;
+    border: 2px solid #fee500;
+    background-color: #fffde7;
   }
 }
 
