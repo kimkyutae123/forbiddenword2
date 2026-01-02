@@ -151,8 +151,13 @@ body {
   background: #fff;
   color: #000;
   border-radius: 0.4em;
-  padding: 8px 12px;
+  padding: 6px 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+  max-width:70%;
+  font-size: 14px;
+  line-height:1.4;
+  word-break: break-all;
 }
 
 /* 말풍선 꼬리 (왼쪽용) */
