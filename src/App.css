@@ -54,9 +54,13 @@
 .welcomegame{
   display: flex;
   flex-direction: column;
-  height: 100vh;         /* 화면 높이 꽉 채우기 */
+  /* 키보드 대응을 위해 dvh를 사용합니다 */
+  height: 100dvh;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
   background-color: #f0f0f0;
-  overflow: hidden;      /* 바깥쪽 스크롤 방지 */
+  overflow: hidden;
 }
 
 #log {
