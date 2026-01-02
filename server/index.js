@@ -21,7 +21,9 @@ const io = new Server(server, {
 
     },
 });
+let occupancy = {1:false,2:false,3:false,4:false};
 
+let socketToplayer= {};
 // 서버에 '이벤트'가 발생했을때 어떻게 행동할지 정의
 // connection은 사용자가 우리 게임페이지에 딱 들어 왔을떄 하는 이벤트
 
@@ -36,7 +38,34 @@ let gameData = {
 io.on("connection", (socket) => {
     //socket 변수안에는 방금 접속한 한 명의 플레이어 정보가 담겨있음
     console.log("새로운 플레이어 접속!", socket.id);
-socket.emit("sync_game_data",gameData.players);
+    socket.emit("sync_game_data",gameData.players);
+
+    socket.on("check_occupancy", (id, callback) => {
+        const targetPlayer = gameData.Players.find(p=> p.id === id);
+
+        if(targetPlayer && !targetPlayer.isOccupied) {
+            targetPlayer.isOccupied = true;
+            socketToplayer[socket.id] = id;
+
+            console.log(`플레이어 ${id} 점유 성공 (socket: ${socket.id})`);
+            callback({success:true});
+
+        }
+        else{
+            callback({
+                success:false,
+                message: `플레이어 ${id}번은 이미 대결중 입니다.`
+            })
+        }
+    });
+    socket.on("leave_player", (id) => {
+        const player= gameData.players.find(p => p.id === id);
+        if(player) {
+            player.isOccupied = false;
+            delete socketToplayer[socket.id];
+            console.log(`플레이어 ${id}번 자리가 비었습니다.`);
+        }
+    });
 
 
     socket.on("set_forbidden", (data) => {
@@ -67,7 +96,18 @@ socket.emit("sync_game_data",gameData.players);
    });
 
    socket.on("disconnect", () => {
-   console.log("유저 접속 종료")
+    const playerId = socketToplayer[socket.id];
+    if(playerId) {
+        const Player = gameData.players.find(p => p.id === playerId);
+        if(Player) {
+            Player.isOccupied = false;
+            console.log(`접속 끊김 : 플레이어 ${playerId}번 자리가 자동 초기화 되었습니다`);
+
+        }
+        delete socketToplayer[socket.id];
+
+    }
+    console.log("유저 접속 종료");
     });
 });
 

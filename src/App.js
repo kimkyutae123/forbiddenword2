@@ -31,13 +31,30 @@ function App() {
 
     // 캐릭터 선택 로직
     const selectPlayerAndEnter = (id) => {
-        setMyId(id);
-        localStorage.setItem("savedMyId", id);
-              setView(1); // 게임 화면(1)으로 이동
-        socket.emit("request_sync");
+        socket.emit("check_occupancy", id, (response) => {
+            if (response.success) {
+                setMyId(id);
+                localStorage.setItem("saveMyId", id);
+                setView(1);
+                socket.emit("request_sync");
+
+            }
+            else{
+                alert(response.message || "이미다른 사람이 사용중인 플레이어 입니다.");
+            }
+        })
 
     };
 
+    const exitGame = () => {
+        if(window.confirm("게임을 나가시겠습니까? 선택한 캐릭터 정보가 초기화됩니다.")) {
+            socket.emit("leave_player",myId);
+            localStorage.removeItem("saveMyId");
+
+            setMyId(null);
+            setView(0);
+        }
+    };
     useEffect(() => {
         const savedId = localStorage.getItem("savedMyId");
         if(savedId){
