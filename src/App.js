@@ -6,13 +6,20 @@ const socket = io("https://forbiddenword2.onrender.com");
 
 function App() {
     // 0: lobby(메인), 1: game(게임방)
-    const [view, setView] = useState(0);
+    const [view, setView] = useState(() => {
+        // 괄호 안에서 로컬스토리지를 먼저 확인!
+        return localStorage.getItem("saveMyId") ? 1 : 0;
+    });
     const [chatLog, setChatLog] = useState([
         { id: 1, user: "운영자", text: "안녕! 금칙어 게임 시작해볼까?", isMe: false },
         { id: 2, user: "운영자", text: "게임을 시작하겠습니다 금칙어를 설정해주세요." }
     ]);
     const [inputValue, setInputValue] = useState("");
-    const [myId, setMyId] = useState(1);
+    const [myId, setMyId] = useState(() => {
+        // 저장된 ID가 있으면 숫자로 바꿔서 가져옴
+        const saved = localStorage.getItem("saveMyId");
+        return saved ? Number(saved) : 1;
+    });
     const [players, setPlayers] = useState([
         { id: 1, name: "플레이어 1", forbiddenWord: "", isAlive: true, isMe: true },
         { id: 2, name: "플레이어 2", forbiddenWord: "", isAlive: true, isMe: false },
@@ -56,10 +63,10 @@ function App() {
         }
     };
     useEffect(() => {
-        const savedId = localStorage.getItem("savedMyId");
-        if(savedId){
-            setMyId(Number(savedId));
-            setView(1);
+        const savedId = localStorage.getItem("saveMyId");
+        if (savedId) {
+            
+            socket.emit("request_sync");
         }
     }, []);
 
