@@ -55,13 +55,13 @@ function App() {
             setView(0);
         }
     };
-    // useEffect(() => {
-    //     const savedId = localStorage.getItem("savedMyId");
-    //     if(savedId){
-    //         setMyId(Number(savedId));
-    //         setView(1);
-    //     }
-    // }, []);
+    useEffect(() => {
+        const savedId = localStorage.getItem("savedMyId");
+        if(savedId){
+            setMyId(Number(savedId));
+            setView(1);
+        }
+    }, []);
 
     const closeGame = () => {
         const resetPlayers = players.map(p => ({
