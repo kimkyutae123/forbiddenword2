@@ -78,6 +78,9 @@ function App() {
         }));
         setPlayers(resetPlayers);
         setChatLog([]);
+        if(myId===1){
+            socket.emit("reset_chat_history");
+        }
         setIsGameStart(false);
         alert("게임이 종료되었습니다");
     };
@@ -115,6 +118,11 @@ function App() {
 
             console.log("서버 연결됨:", socket.id);
         });
+
+        socket.on("sync_chat_history", (history) => {
+            console.log("이전 대화 내역 동기화 완료");
+            setChatLog(history);
+        });
          socket.on("sync_game_data", (serverPlayers)=>{
              console.log("데이터 동기화 완료!");
              setPlayers(serverPlayers.map(sp => ({
@@ -142,6 +150,7 @@ function App() {
 
 
         return () => {
+            socket.off("sync_chat_history");
             socket.off("sync_game_data");
             socket.off("connect");
             socket.off("update_forbidden");

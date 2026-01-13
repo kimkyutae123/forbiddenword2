@@ -36,6 +36,7 @@ let gameData = {
 };
 
 let socketToplayer= {};
+let chatHistory = [];
 io.on("connection", (socket) => {
     //socket 변수안에는 방금 접속한 한 명의 플레이어 정보가 담겨있음
     console.log("새로운 플레이어 접속!", socket.id);
@@ -68,6 +69,15 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("send_message", (data) => {
+        chatHistory.push(data);
+        if(chatHistory.length > 50) chatHistory.shift();
+        io.emit("receive_message", data);
+    });
+
+    socket.on("request_sync", () => {
+        socket.emit("sync_chat_history", chatHistory);
+    });
 
     socket.on("set_forbidden", (data) => {
         console.log("서버: 금칙어 설정 요청 받음", data);
