@@ -80,8 +80,8 @@ function App() {
         setChatLog([]);
         if(myId===1){
             socket.emit("reset_chat_history");
-        }
-        setIsGameStart(false);
+
+            setIsGameStart(false);
         alert("게임이 종료되었습니다");
     };
 
@@ -131,7 +131,10 @@ function App() {
              })));
          });
 
-
+        socket.on("sync_chat_history", (history) => {
+            console.log("이전 대화 내역 동기화 완료");
+            setChatLog(history);
+        });
         socket.on("update_forbidden", (data) => {
             setPlayers((prevPlayers) => prevPlayers.map(p =>
                 p.id === data.targetId ? { ...p, forbiddenWord: data.forbiddenWord } : p

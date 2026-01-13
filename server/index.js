@@ -101,10 +101,6 @@ io.on("connection", (socket) => {
     });
 
 
-   socket.on("send_message", (data) => {
-   console.log("서버: 메세지 받음", data);
-   io.emit("receive_message", data);
-   });
 
    socket.on("disconnect", () => {
     const playerId = socketToplayer[socket.id];
